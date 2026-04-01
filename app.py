@@ -77,7 +77,7 @@ if st.button("⚡ Generate Character", type="primary", use_container_width=True,
         # ── Stage 1: AI ───────────────────────────────────────────────────────
         st.write("Crafting character concept...")
 
-        system_prompt = """You are an expert 2D game character designer.
+        system_prompt = """You are an expert 2D game character designer AND a CSS artist.
 Given only a gender and body type, invent a complete, vivid, original game character.
 You decide everything: species, backstory, outfit, art style, color palette, personality, weapon.
 Make them unique and interesting — not generic.
@@ -93,7 +93,7 @@ Respond ONLY with valid JSON (no markdown fences, no explanation):
   "weapon_or_item": "string",
   "backstory": "string (2 sentences)",
   "autosprite_prompt": "string (rich visual description for 2D game spritesheet, 3-4 sentences)",
-  "css_character": "string (complete self-contained HTML page: dark background, CSS character silhouette ~200px tall using divs/border-radius/transforms, idle breathing @keyframes animation)"
+  "css_character": "string (a complete self-contained HTML page that visually represents THIS specific character using pure CSS. Rules: (1) Use the character's actual colors from color_palette as CSS colors. (2) Build the body shape to match the body type and species — e.g. hulking = wide shoulders, elf = tall/slim, robot = boxy, demon = horns. (3) Add outfit details as CSS layers — armor plates, robes, cloaks using positioned divs. (4) Add the weapon/item as a CSS element beside or in the character's hand. (5) Use @keyframes for idle breathing animation. (6) Dark background (#0d0d1a). (7) Character centered, ~220px tall. (8) Add a subtle drop-shadow glow using the character's primary color. The result must look like a recognizable preview of THIS specific character, not a generic blob.)"
 }"""
 
         user_msg = f"Gender: {gender_val}\nBody type: {body_val}\nSeed: {seed}\n\nCreate a unique and compelling game character."
@@ -109,7 +109,7 @@ Respond ONLY with valid JSON (no markdown fences, no explanation):
                         {"role": "user", "content": user_msg},
                     ],
                     "temperature": 1.0,
-                    "max_tokens": 3000,
+                    "max_tokens": 4000,
                 },
                 timeout=40,
             )
@@ -256,8 +256,15 @@ func attack():
     st.divider()
 
     # CSS Preview
-    st.subheader("🖼️ CSS Character Preview")
-    st.components.v1.html(data["css_character"], height=320, scrolling=False)
+    st.subheader("🖼️ Character Preview")
+    st.caption("This is how your character looks before finalizing in Godot — colors, outfit, and body shape match what was sent to AutoSprite.")
+    st.components.v1.html(data["css_character"], height=420, scrolling=False)
+    col_approve, col_regen = st.columns(2)
+    with col_approve:
+        st.success("✅ Happy with this? Download the GDScript below.")
+    with col_regen:
+        if st.button("🔄 Regenerate Character", use_container_width=True):
+            st.rerun()
     st.divider()
 
     # AutoSprite Results
