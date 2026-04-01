@@ -260,13 +260,15 @@ func attack():
     st.components.v1.html(data["css_character"], height=320, scrolling=False)
     st.divider()
 
-    # AutoSprite Prompt
-    st.subheader("📋 AutoSprite Prompt")
-    st.code(data["autosprite_prompt"], language=None)
-
+    # AutoSprite Results
+    st.subheader("🎯 AutoSprite Spritesheet")
     if autosprite_result:
+        char_id    = autosprite_result.get("id") or autosprite_result.get("character_id", "")
         sprite_url = autosprite_result.get("sprite_url") or autosprite_result.get("url", "")
         atlas_url  = autosprite_result.get("atlas_url")  or autosprite_result.get("json_url", "")
+        if char_id:
+            st.success(f"✅ Character queued on AutoSprite — ID: `{char_id}`")
+            st.markdown("[View in AutoSprite Dashboard →](https://autosprite.io/dashboard)")
         if sprite_url:
             st.image(sprite_url, caption="Generated Spritesheet")
             st.download_button("⬇️ Download Spritesheet PNG",
@@ -276,10 +278,8 @@ func attack():
             st.download_button("⬇️ Download Atlas JSON",
                                requests.get(atlas_url).text,
                                file_name=f"{class_name}_atlas.json", mime="application/json")
-        with st.expander("Raw AutoSprite response"):
-            st.json(autosprite_result)
     else:
-        st.info("No AutoSprite key provided — copy the prompt above and submit at [autosprite.io](https://autosprite.io)")
+        st.warning("AutoSprite submission failed — check your AutoSprite API key in secrets.")
 
     st.divider()
 
