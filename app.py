@@ -20,13 +20,9 @@ st.caption("Pick gender + body type → AI generates everything → AutoSprite �
 
 st.divider()
 
-# ── API Keys ──────────────────────────────────────────────────────────────────
-with st.expander("🔑 API Keys", expanded=not st.session_state.get("keys_saved")):
-    groq_key = st.text_input("Groq API Key (free)", type="password", placeholder="gsk_...", key="groq_key")
-    autosprite_key = st.text_input("AutoSprite API Key", type="password", placeholder="as_...", key="autosprite_key")
-    if groq_key and autosprite_key:
-        st.session_state.keys_saved = True
-        st.success("✅ Keys saved")
+# ── API Keys — loaded from secrets only ──────────────────────────────────────
+groq_key = st.secrets["GROQ_API_KEY"]
+autosprite_key = st.secrets["AUTOSPRITE_API_KEY"]
 
 st.divider()
 
@@ -66,11 +62,9 @@ if st.session_state.body_type:
 st.divider()
 
 # ── Generate ──────────────────────────────────────────────────────────────────
-ready = bool(groq_key and st.session_state.body_type)
+ready = bool(st.session_state.body_type)
 
-if not groq_key:
-    st.warning("Enter your Groq API key above to continue.")
-elif not st.session_state.body_type:
+if not st.session_state.body_type:
     st.warning("Pick a body type to continue.")
 
 if st.button("⚡ Generate Character", type="primary", use_container_width=True, disabled=not ready):
